@@ -1,28 +1,72 @@
-const express = require("express"), 
-morgan = require('morgan');
+const express = require("express");
+const morgan = require('morgan');
+const fs = require('fs'); // import built in node modules fs and path 
+const path = require('path');
+
 const app = express();
 
-app.use(morgan('common'));
+let favoriteMovies = [
+  {
+    title: 'Top Gun',
+    year: '1986'
+  },
+  {
+    title: 'The Godfather',
+    year: '1972'
+  },
+  {
+    title: 'Casablanca',
+    year: '1942'
+  },
+  {
+    title: 'Gone with the wind',
+    year: '1939'
+  },
+  {
+    title: 'Citizen Kane',
+    year: '1941'
+  },
+  {
+    title: 'Schilndler\'s List',
+    year: '1993'
+  },
+  {
+    title: 'Vertigo',
+    year: '1958'
+  },
+  {
+    title: 'Forrest Gump',
+    year: '1994'
+  },
+  {
+    title: 'The Sound of Music',
+    year: '1965'
+  },
+  {
+    title: 'West Side Story',
+    year: '1961'
+  }
+];
 
-app.use(express.static('public/documentation.html'));
+// create a write stream (in append mode)
+// a ‘log.txt’ file is created in root directory
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
 
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }));
 
-app.get('/', (req, res) => {
-  res.send('Welcome to my app!');
-});
-
-
-let myLogger = (req, res, next) => {
-  console.log(req.url);
-  next();
-};
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
   res.send('Welcome to my app!');
 });
 
 app.get('/secreturl', (req, res) => {
-  res.send('This is a secret url with super top-secret content.');
+  res.send('This is a secret URL with super top-secret content.');
+});
+
+app.get('/movies', (req, res) => {
+  res.json(favoriteMovies);
 });
 
 app.use((err, req, res, next) => {
@@ -33,13 +77,3 @@ app.use((err, req, res, next) => {
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080.');
 });
-
-
-const http = require('http');
-
-http.createServer((request, response) => {
-  response.writeHead(200, {'Content-Type': 'text/plain'});
-  response.end('Welcome to my book club!\n');
-}).listen(8080);
-
-console.log('My first Node test server is running on Port 8080.');
