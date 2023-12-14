@@ -14,30 +14,78 @@
 
     <h2>Usage</h2>
     <p>Users will be able to:
-
-
-tanya cu valentina
-
-teresa cuiva strain
-
-yana pehl - ?
-
-lea kratchmer - ceva neam cu bischof
-
-ilona - 
-
-manuela - elena hagedorn, daughter of risse charlotte, maybe rahke
-
-lydia needs ministering sisters
-
-
-
-
     </p>
         <ul>
             <li>sign up</li>
             <li>update their personal information</li>
             <li>create a list of their favorite movies</li>
         </ul>
+
+    <h2>API Documentation</h2>
+        <table>
+    <tr>
+        <th>Description</th>
+        <th>URL</th>
+        <th>HTTP Method</th>
+        <th>Query Parameters</th>
+        <th>Request</th>
+        <th>Response</th>
+    </tr>
+    <tr>
+        <td>Retrieve all movies</td>
+        <td>/movies</td>
+        <td>GET</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Retrieve data about a movie by title</td>
+        <td>/movies/:title</td>
+        <td>GET</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Retrieve data about a genre by name</td>
+        <td>/movies/:genres/:genreName</td>
+        <td>GET</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Retrieve data about a director by name</td>
+        <td>/movies/:directors/:directorName</td>
+        <td>GET</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Add user</td>
+        <td>/users</td>
+        <td>POST</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Update user data</td>
+        <td>/users/:id</td>
+        <td>PUT</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Add movie to favorites</td>
+        <td>/movies/:id/:movieTitle</td>
+        <td>POST</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Remove movie from favorites</td>
+        <td>/movies/:favorites</td>
+        <td>DELETE</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Delete user</td>
+        <td>/users</td>
+        <td>DELETE</td>
+        <td></td>
+    </tr>
+</table>
+
 </body>
 </html>
