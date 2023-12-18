@@ -1,3 +1,5 @@
+const app = express();
+
 const express = require("express"),
   morgan = require('morgan'),
   fs = require('fs'), // import built in node modules fs and path 
@@ -6,8 +8,6 @@ const express = require("express"),
   uuid = require('uuid');
 
 app.use(bodyParser.json());
-
-const app = express();
 
 let users = [
   {
@@ -35,7 +35,7 @@ let users = [
     id: 5,
     favorites:[]
   }
-],
+];
 
 
 let movies = [
@@ -118,10 +118,6 @@ app.get('/secreturl', (req, res) => {
   res.send('This is a secret URL with super top-secret content.');
 });
 
-app.get('/movies', (req, res) => {
-  res.json(movies);
-});
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
@@ -139,7 +135,7 @@ app.get('/movies', (req, res) => {
 //get or read the information about a specific movie by title
 app.get('/movies/:title', (req, res) => {
   const { title } = req.params;
-  const movies = movies.find( movie => movie.Title === title );
+  const movies = movies.find( movie => movie.title === title );
 
   if(movie){
     res.status(200).json(movie);
@@ -151,7 +147,7 @@ app.get('/movies/:title', (req, res) => {
 //get or read information about a specific movie genre
 app.get('/movies/:genre/:genreName', (req, res) => {
   const { genreName } = req.params;
-  const genre = movies.find( movie => movie.genre.Name === genreName ).Genre;
+  const genre = movies.find( movie => movie.genre === genreName ).Genre;
 
   if(genre){
     res.status(200).json(genre);
@@ -161,7 +157,7 @@ app.get('/movies/:genre/:genreName', (req, res) => {
   });
 
 //get or read information about a specific movie director
-app.get('/movies/directors/:directorName', (req, res) => 
+app.get('/movies/:directors/:directorName', (req, res) => 
 const { directorName } = req.params;
 const director = movies.find( movie => movie.Director.Name === directorName ).Director;
 
@@ -177,11 +173,11 @@ app.post('/users', (req, res) => {
   const newUser = req.body;
 
   if (newUser.name){
-    newUser.id = uuid.v4;
+    newUser.id = uuid.v4();
     users.push(newUser);
     res.status(201).json(newUser)
   } else {
-    res.status(400).send('No such user');
+    res.status(400).send('Invalid user data');
   }
 });
 
@@ -202,13 +198,13 @@ app.put('/users/:id', (req, res) => {
 
 
   //create or POST user's favorite movies
-app.post('/users/id:/:movieTitle', (req, res) => {
+  app.post('/users/:id/:movieTitle', (req, res) => {
   const { id, movieTitle } = req.params;
   let user = users.find(user => user.id == id);
 
   if (user){
     user.favoriteMovies.push(movieTitle);
-    res.status(200).send('${movieName} has been added to user ${id}\'s list of favorite movies');
+    res.status(200).send(`${movieTitle} has been added to user ${id}\'s list of favorite movies`);
   } else {
     res.status(400).send('No such user');
   }
@@ -221,20 +217,20 @@ app.delete('/users/id:/movieTitle', (req, res) => {
 
   if (user) {
     user.favoriteMovies = user.favoriteMovies.filter(title => title !== movieTitle);
-    res.status(200).send('${movieTitle} has been removed from user ${id}\'s list of favorite movies');
+    res.status(200).send(`${movieTitle} has been removed from user ${id}\'s list of favorite movies`);
   } else {
     res.status(400).send('No such user');
   }
   });
 
 //delete users  
-app.delete('/users', (req, res) => {
+app.delete('/users/:id', (req, res) => {
   const { id } = req.params;
   let user = users.find(user => user.id == id);
 
   if (user) {
     users = users.filter(user => user.id != id);
-    res.status(200).send('User ${id} has been deleted');
+    res.status(200).send(`User ${req.params.id} has been deleted`);
   } else {
     res.status(400).send('No such user');
   }
