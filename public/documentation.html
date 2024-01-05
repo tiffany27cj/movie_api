@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie API</title>
+    <style>
+        * {
+            margin: 2rem;
+        }
+        table, th, td {
+            border: 1px solid;
+        }
+    </style>
 </head>
 <body>
     <h2>Description</h2>
@@ -16,76 +24,226 @@
     <p>Users will be able to:
     </p>
         <ul>
-            <li>sign up</li>
+            <li>sign in</li>
             <li>update their personal information</li>
+            <li>see a list of all the movies</li>
             <li>create a list of their favorite movies</li>
+            <li>delete movies from their list of favorite movies</li>
         </ul>
 
     <h2>APIs</h2>
-        <table>
-    <tr>
-        <th>Description</th>
-        <th>URL</th>
-        <th>HTTP Method</th>
-        <th>Query Parameters</th>
-        <th>Request</th>
-        <th>Response</th>
-    </tr>
-    <tr>
-        <td>Retrieve all movies</td>
-        <td>/movies</td>
-        <td>GET</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Retrieve data about a movie by title</td>
-        <td>/movies/:title</td>
-        <td>GET</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Retrieve data about a genre by name</td>
-        <td>/movies/genres/:genreName</td>
-        <td>GET</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Retrieve data about a director by name</td>
-        <td>/movies/directors/:directorName</td>
-        <td>GET</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Add user</td>
-        <td>/users</td>
-        <td>POST</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Update user data</td>
-        <td>/users/:id</td>
-        <td>PUT</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Add movie to favorites</td>
-        <td>/users/:id/:movieTitle</td>
-        <td>POST</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Remove movie from favorites</td>
-        <td>/users/:id/:movieTitle</td>
-        <td>DELETE</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Delete user</td>
-        <td>/users/:id</td>
-        <td>DELETE</td>
-        <td></td>
-    </tr>
-</table>
-
+    <table>
+        <thead>
+            <tr>
+                <th>Business Logic</th>
+                <th>URL</th>
+                <th>HTTP method</th>
+                <th>Request body data format</th>
+                <th>Response body data format</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Return a list of ALL movies to the user</td>
+                <td>/movies</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about all movies</td>
+            </tr>
+            <tr>
+                <td>Return data about a single movie by title to the user</td>
+                <td>/movies/[title]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about a single movie, containing title, year, genre, director. Example:
+                    <code>
+                        {
+                            Title: 'The Godfather',
+                            Description: 'Don Vito Corleone, head of a mafia family, decides to hand over his empire to his youngest son Michael. However, his decision unintentionally puts the lives of his loved ones in grave danger.',
+                            Genre: {
+                              Name: 'action',
+                              Description: 'Action movies usually have a lot of violent things, like explosions, blood, and fight scenes. It can also have elements of comedy, drama, and spy fiction.'
+                            },
+                            Director: {
+                              Name: 'Francis Ford Cappola',
+                              Bio: 'Francis Ford Coppola was born in 1939 in Detroit, Michigan, but grew up in a New York suburb in a creative, supportive Italian-American family.',
+                              Birth: '1939',
+                              Death: 'Still alive',
+                              Nickname: "doesn't have one"
+                            },
+                            Imagepath: 'thegodfather.png',
+                            Features: true
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Return data about a genre by name</td>
+                <td>/movies/genre/[genreName]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about a single genre, containing genre name, description. Example:
+                    <code>
+                        {
+                            "Name": "action",
+                            "Description": "'Action movies usually have a lot of violent things, like explosions, blood, and fight scenes. It can also have elements of comedy, drama, and spy fiction."
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Return data about a director by name</td>
+                <td>/movies/directors/[directorName]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about a single director, containing director name, bio, birth and death year. Example:
+                    <code>
+                        {
+                            "Name": "Orson Welles",
+                            "Bio": "Orson Welles  was a film director, and producer, with a reputation for reliability, a no-nonsense approach and with an ability to finish a project on time and under budget.",
+                            "Birth": "1915",
+                            "Death": "1985",
+                            "Nickname": "The Great One"
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Return a list of ALL users</td>
+                <td>/users</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about all users</td>
+            </tr>
+            <tr>
+                <td>Return data about a single user by username</td>
+                <td>/users/[Username]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about a single user, containing username, password, email, birthday, favorite movies. Example:
+                    <code>
+                        {
+                            "_id": "654955e502d2f93ced6e02cc",
+                            "Username": "Alicejohnson",
+                            "Password": "supersecure9837",
+                            "Email": "alice.johnson@example.com",
+                            "Birthday": "1987-08-08T00:00:00.000Z",
+                            "FavoriteMovies": [
+                                "6549494c02d2f93ced6e02c3",
+                                "65494a9102d2f93ced6e02c4"
+                            ]
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow new users to register</td>
+                <td>/users</td>
+                <td>POST</td>
+                <td>A JSON object holding data about the user to add, structured like:
+                    <code>
+                        {
+                            ID: Integer,
+                            Username: String,
+                            Password: String,
+                            Email: String,
+                            Birthday: Date
+                        }
+                    </code>
+                </td>
+                <td>A JSON object holding data about the user that was added, including an ID. Example:
+                    <code>
+                        {
+                            "Username": "John Doe",
+                            "Password": "splashjjj1234",
+                            "Email": "john.doe@example.com",
+                            "FavoriteMovies": [],
+                            "_id": "654b8b77d73c652a6f31a9f2",
+                            "__v": 0
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow users to update their user info by Username</td>
+                <td>/users/[Username]</td>
+                <td>PUT</td>
+                <td>A JSON object holding data about the user which needs to be updated, structured like:
+                    <code>
+                        {
+                            Username: req.body.Username,
+                            Password: req.body.Password,
+                            Email: req.body.Email,
+                            Birthday: req.body.Birthday
+                        }
+                    </code>
+                </td>
+                <td>A JSON object holding data about the updated user information. Example:
+                    <code>
+                        {
+                            "_id": "654b859f9a9bce7911eca5c5",
+                            "Username": "Janesmith",
+                            "Password": "newpassword",
+                            "Email": "jane.smith@example.com",
+                            "FavoriteMovies": [
+                                "65493d8102d2f93ced6e02c1",
+                                "65493be802d2f93ced6e02c0"
+                            ],
+                            "__v": 0,
+                            "Birthday": "1997-12-13T00:00:00.000Z"
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow users to add a movie to their list of favorites</td>
+                <td>/users/[Username]/movies/[MovieID]</td>
+                <td>POST</td>
+                <td>None</td>
+                <td>A JSON object holding data about the updated user information. Example:
+                    <code>
+                        {
+                            "_id": "6549568202d2f93ced6e02cd",
+                            "Username": "Bobmiller",
+                            "Password": "sesameopen3765",
+                            "Email": "bob.miller@example.com",
+                            "Birthday": "1983-03-04T00:00:00.000Z",
+                            "FavoriteMovies": [
+                                "65494d2b02d2f93ced6e02c6",
+                                "65494bd602d2f93ced6e02c5"
+                            ]
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow users to remove a movie from their list of favorites</td>
+                <td>/users/[Username]/movies/[MovieID]</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>A JSON object holding data about the updated user information. Example:
+                    <code>
+                        {
+                            "_id": "6549568202d2f93ced6e02cd",
+                            "Username": "Evawilliams",
+                            "Password": "superpass4321",
+                            "Email": "eva.williams@example.com",
+                            "Birthday": "1993-02-02T00:00:00.000Z",
+                            "FavoriteMovies": [
+                                "65494d2b02d2f93ced6e02c6"
+                            ]
+                        }
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow existing users to deregister</td>
+                <td>/users/[Username]</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>Text message indicating whether the user deregister successfully.</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
