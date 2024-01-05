@@ -136,7 +136,7 @@ app.get('/movies/:title', (req, res) => {
 });
 
 //get or read information about a specific movie genre
-app.get('/movies/genre/:genreName', (req, res) => {
+app.get('/movies/:genre/:genreName', (req, res) => {
   const { genreName } = req.params;
   const genre = movies.find(movie => movie.genre === genreName);
 
@@ -148,7 +148,7 @@ app.get('/movies/genre/:genreName', (req, res) => {
 });
 
 //get or read information about a specific movie director
-app.get('/movies/directors/:directorName', (req, res) => {
+app.get('/movies/:directors/:directorName', (req, res) => {
   const { directorName } = req.params;
   const director = movies.find(movie => movie.director === directorName);
 
