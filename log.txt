@@ -12,3 +12,4 @@
 ::1 - - [05/Jan/2024:16:02:38 +0000] "POST /users HTTP/1.1" 500 16 "-" "PostmanRuntime/7.36.0"
 ::1 - - [05/Jan/2024:16:02:58 +0000] "PUT /users/2 HTTP/1.1" 200 23 "-" "PostmanRuntime/7.36.0"
 ::1 - - [05/Jan/2024:16:08:22 +0000] "DELETE /users/2 HTTP/1.1" 200 23 "-" "PostmanRuntime/7.36.0"
+::1 - - [08/Jan/2024:15:13:00 +0000] "GET /movies HTTP/1.1" 500 44 "-" "PostmanRuntime/7.36.0"
