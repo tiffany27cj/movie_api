@@ -12,7 +12,6 @@ let movieSchema = mongoose.Schema({
     Bio: String,
     Nickname: String
   },
-  Actors: [String],
   ImagePath: String,
   Featured: Boolean
 });
@@ -23,6 +22,8 @@ let userSchema = mongoose.Schema({
   Email: {type: String, required: true},
   Password: {type: String, required: true},
   Birthday: Date,
+  CreatedAt: Date,
+  UpdatedAt: Date,
   FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });
 
