@@ -21,3 +21,7 @@
 ::1 - - [09/Jan/2024:06:18:31 +0000] "POST /users HTTP/1.1" 500 144 "-" "PostmanRuntime/7.36.0"
 ::1 - - [09/Jan/2024:06:21:05 +0000] "PUT /users/8?name=Angelika%20Hunt HTTP/1.1" 500 16 "-" "PostmanRuntime/7.36.0"
 ::1 - - [09/Jan/2024:06:22:14 +0000] "DELETE /users/5/Forrest%20Gump HTTP/1.1" 500 16 "-" "PostmanRuntime/7.36.0"
+::1 - - [18/Jan/2024:14:03:54 +0000] "GET /movies HTTP/1.1" 401 - "-" "PostmanRuntime/7.36.1"
+::1 - - [18/Jan/2024:14:12:09 +0000] "POST /users/ HTTP/1.1" 500 104 "-" "PostmanRuntime/7.36.1"
+::1 - - [18/Jan/2024:14:15:58 +0000] "POST /users/ HTTP/1.1" 422 215 "-" "PostmanRuntime/7.36.1"
+::1 - - [18/Jan/2024:14:16:53 +0000] "POST /users/ HTTP/1.1" 201 208 "-" "PostmanRuntime/7.36.1"
