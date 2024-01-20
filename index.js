@@ -10,6 +10,8 @@ const app = express();
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
+app.use(bodyParser.json());
+
 //import auth.js
 let auth = require('./auth')(app);
 
@@ -20,8 +22,6 @@ require('./passport');
 const Movies = Models.Movie;
 const Users = Models.User;
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
-
-app.use(bodyParser.json());
 
 // create a write stream (in append mode)
 // a ‘log.txt’ file is created in root directory
