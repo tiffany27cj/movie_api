@@ -94,7 +94,6 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
 });
 
 //create or post new user
-// CREATE new user
 /* expect JSON in this format
 {
   ID: Integer,
@@ -104,71 +103,6 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
   Email: String,
   Birthday: Date
 }*/
-app.post('/users', 
-    [
-        // check('lastName', 'LastName is required').isLength({min: 5}),
-        // check('lastName', 'LastName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-        check('Password', 'Password is required').not().isEmpty(),
-        check('Email', 'Email does not appear to be valid').isEmail()
-    ], async (req, res) => {
-
-    // check the validation object for errors
-    let errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
-
-    let hashedPassword = Users.hashPassword(req.body.Password);
-    await Users.findOne({ Email: req.body.Email}) // Search to see if a user with the requested email already exists
-        .then((user) => {
-            if (user) {
-                return res.status(400).send(req.body.Email + 'already exists');
-            } else {
-                Users
-                    .create({
-                        firstName: req.body.firstName, 
-                        lastName: req.body.lastName,
-                        Password: hashedPassword,
-                        Email: req.body.Email,
-                        Birthday: req.body.Birthday
-                    })
-                    .then((user) => { res.status(201).json(user) })
-                .catch((error) => {
-                    console.error(error);
-                    res.status(500).send('Error: ' + error);
-                })
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).send('Error: ' + error);
-        });
-})
-
-// get or read all users
-app.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Users.find()
-      .then((users) => {
-          res.status(201).json(users);
-      })
-      .catch((err) => {
-          console.error(err);
-          res.status(500).send('Error: ' + err);
-      });
-});
-
-// update or put user information by email
-/* expect JSON in this format
-{
-  FirstName: String, (required)
-  LastName: String, (required)
-  Email: String, (required)
-  Password: String, (required)
-  Birthday: Date
-  CreatedAt: Date
-  UpdatedAt: Date
-}*/
-
 app.post('/users',
     [
         check('FirstName', 'FirstName is required').isLength({ min: 5 }),
@@ -212,6 +146,72 @@ app.post('/users',
                 res.status(500).send('Error: ' + error);
             });
     })
+
+
+// get or read all users
+app.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  await Users.find()
+      .then((users) => {
+          res.status(201).json(users);
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
+});
+
+// update or put user information by email
+/* expect JSON in this format
+{
+  FirstName: String, (required)
+  LastName: String, (required)
+  Email: String, (required)
+  Password: String, (required)
+  Birthday: Date
+  CreatedAt: Date
+  UpdatedAt: Date
+}*/
+app.put('/users/:Email', passport.authenticate('jwt', { session: false }),
+    [
+        check('Email', 'Email is required').isLength({min: 5}),
+        check('Password', 'Password is required'), //.not().isEmpty()
+        check('Email', 'Email does not appear to be valid').isEmail()
+    ], async (req, res) => {
+          if(req.user.Email !== req.params.Email){
+          return res.status(400).send('Permission denied');
+    }
+  
+    // check the validation object for errors
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
+    // gives you data already in the database
+    let oldData = Users.findOne({ Email: req.params.Email }); 
+
+    let hashedPassword = req.body.Password? Users.hashPassword(req.body.Password) : Users.findOne({ Email: req.params.Email }).Password;
+    await Users.findOneAndUpdate({ Email: req.params.Email }, { $set:
+        {
+            // if there is new data, update the database with new data, else use old data
+            FirstName: req.body.FirstName,
+            LastName: req.body.LastName || oldData.LastName,
+            Password: hashedPassword, // see hashed variable above
+            Email: req.body.Email || oldData.Email,
+            Birthday: req.body.Birthday || oldData.Birthday,
+            CreatedAt: req.body.CreatedAt || oldData.CreatedAt,
+            UpdatedAt: req.body.UpdatedAt || oldData.UpdatedAt
+        }
+    },
+    { new: true }) // we make sure that the updated document is returned
+    .then((updatedUser) => {
+        res.json(updatedUser);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    })
+});
 
 // add a movie to a user's list of favorites
 app.post('/users/:Email/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -278,7 +278,6 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
-
 
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
