@@ -168,47 +168,50 @@ app.get('/users', passport.authenticate('jwt', { session: false }), async (req, 
   CreatedAt: Date
   UpdatedAt: Date
 }*/
-app.put('/users/:Email', passport.authenticate('jwt', { session: false }),
+
+app.post('/users',
     [
-        check('Email', 'Email is required').isLength({min: 5}),
-        check('Password', 'Password is required'), //.not().isEmpty()
+        check('FirstName', 'FirstName is required').isLength({ min: 5 }),
+        check('FirstName', 'FirstName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+        check('LastName', 'LastName is required').isLength({ min: 5 }),
+        check('LastName', 'LastName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+        check('Password', 'Password is required').not().isEmpty(),
         check('Email', 'Email does not appear to be valid').isEmail()
     ], async (req, res) => {
-          if(req.user.Email !== req.params.Email){
-          return res.status(400).send('Permission denied');
-    }
-  
-    // check the validation object for errors
-    let errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
 
-    // gives you data already in the database
-    let oldData = Users.findOne({ Email: req.params.Email }); 
-
-    let hashedPassword = req.body.Password? Users.hashPassword(req.body.Password) : Users.findOne({ Email: req.params.Email }).Password;
-    await Users.findOneAndUpdate({ Email: req.params.Email }, { $set:
-        {
-            // if there is new data, update the database with new data, else use old data
-            FirstName: req.body.FirstName,
-            LastName: req.body.LastName || oldData.LastName,
-            Password: hashedPassword, // see hashed variable above
-            Email: req.body.Email || oldData.Email,
-            Birthday: req.body.Birthday || oldData.Birthday,
-            CreatedAt: req.body.CreatedAt || oldData.CreatedAt,
-            UpdatedAt: req.body.UpdatedAt || oldData.UpdatedAt
+        // check the validation object for errors
+        let errors = validationResult(req);
+        console.log("errors: ", errors)
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
         }
-    },
-    { new: true }) // we make sure that the updated document is returned
-    .then((updatedUser) => {
-        res.json(updatedUser);
+
+        let hashedPassword = Users.hashPassword(req.body.Password);
+        await Users.findOne({ Email: req.body.Email }) // Search to see if a user with the requested email already exists
+            .then((user) => {
+                if (user) {
+                    return res.status(400).send(req.body.Email + 'already exists');
+                } else {
+                    Users
+                        .create({
+                            FirstName: req.body.FirstName,
+                            LastName: req.body.LastName,
+                            Password: hashedPassword,
+                            Email: req.body.Email,
+                            Birthday: req.body.Birthday
+                        })
+                        .then((user) => { res.status(201).json(user) })
+                        .catch((error) => {
+                            console.error(error);
+                            res.status(500).send('Error: ' + error);
+                        })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                res.status(500).send('Error: ' + error);
+            });
     })
-    .catch((err) => {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-    })
-});
 
 // add a movie to a user's list of favorites
 app.post('/users/:Email/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
