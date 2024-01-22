@@ -12,6 +12,9 @@ const Models = require('./models.js');
 
 app.use(bodyParser.json());
 
+const cors = require('cors');
+app.use(cors());
+
 //import auth.js
 let auth = require('./auth')(app);
 
@@ -95,15 +98,16 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
 /* expect JSON in this format
 {
   ID: Integer,
-  Username: String,
+  FirstName: String,
+  LastName: String,
   Password: String,
   Email: String,
   Birthday: Date
 }*/
 app.post('/users', 
     [
-        check('lastName', 'LastName is required').isLength({min: 5}),
-        check('lastName', 'LastName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+        // check('lastName', 'LastName is required').isLength({min: 5}),
+        // check('lastName', 'LastName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
         check('Password', 'Password is required').not().isEmpty(),
         check('Email', 'Email does not appear to be valid').isEmail()
     ], async (req, res) => {
@@ -114,7 +118,7 @@ app.post('/users',
         return res.status(422).json({ errors: errors.array() });
     }
 
-    // let hashedPassword = Users.hashPassword(req.body.Password);
+    let hashedPassword = Users.hashPassword(req.body.Password);
     await Users.findOne({ Email: req.body.Email}) // Search to see if a user with the requested email already exists
         .then((user) => {
             if (user) {
@@ -124,7 +128,7 @@ app.post('/users',
                     .create({
                         firstName: req.body.firstName, 
                         lastName: req.body.lastName,
-                        Password: req.body.Password,
+                        Password: hashedPassword,
                         Email: req.body.Email,
                         Birthday: req.body.Birthday
                     })
@@ -272,7 +276,8 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
-});
 
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
+});
