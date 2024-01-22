@@ -105,7 +105,7 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
 }*/
 app.post('/users',
     [
-        check('FirstName', 'FirstName is required').isLength({ min: 5 }),
+        check('FirstName', 'FirstName should be at least five characters').isLength({ min: 5 }),
         check('FirstName', 'FirstName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
         check('LastName', 'LastName is required').isLength({ min: 5 }),
         check('LastName', 'LastName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
@@ -253,7 +253,7 @@ app.delete('/users/:Email/movies/:MovieID', passport.authenticate('jwt', { sessi
   });
 });
 
-//delete users  
+//delete users by email
 app.delete('/users/:Email', passport.authenticate('jwt', { session: false }), async (req, res) => {
   // Condition to check user authorization
   if(req.user.Email !== req.params.Email){
